@@ -1,0 +1,77 @@
+const products = [
+  ["Fresh Tomatoes", 50, "🍅"],
+  ["Fresh Apples", 180, "🍎"],
+  ["Bananas", 60, "🍌"],
+  ["Fresh Milk", 32, "🥛"],
+  ["Basmati Rice", 650, "🍚"],
+  ["Wheat Flour", 280, "🌾"],
+  ["Cooking Oil", 145, "🫗"],
+  ["Biscuits", 30, "🍪"],
+  ["Potato Chips", 20, "🥔"],
+  ["Tea Powder", 250, "🍵"]
+];
+
+const list = document.getElementById("productList");
+const searchInput = document.getElementById("searchInput");
+const suggestions = document.getElementById("suggestions");
+
+function showProducts(items) {
+  if (!list) return;
+  list.innerHTML = items.map(p => `
+    <div class="product-card">
+      <div class="emoji">${p[2]}</div>
+      <h3>${p[0]}</h3>
+      <div class="price">₹${p[1]}</div>
+    </div>
+  `).join("");
+}
+
+function updateSuggestions() {
+  if (!searchInput || !suggestions) return;
+  const q = searchInput.value.toLowerCase().trim();
+  suggestions.innerHTML = "";
+
+  if (!q) {
+    showProducts(products);
+    return;
+  }
+
+  const matches = products.filter(p => p[0].toLowerCase().includes(q));
+  matches.slice(0, 5).forEach(p => {
+    const div = document.createElement("div");
+    div.className = "suggestion";
+    div.textContent = p[0];
+    div.onclick = () => {
+      searchInput.value = p[0];
+      suggestions.innerHTML = "";
+      showProducts([p]);
+    };
+    suggestions.appendChild(div);
+  });
+}
+
+function searchProducts() {
+  if (!searchInput) return;
+  const q = searchInput.value.toLowerCase().trim();
+  const matches = products.filter(p => p[0].toLowerCase().includes(q));
+  showProducts(q ? matches : products);
+  if (suggestions) suggestions.innerHTML = "";
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", updateSuggestions);
+  searchInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") searchProducts();
+  });
+  showProducts(products);
+}
+
+const loginForm = document.getElementById("loginForm");
+if (loginForm) {
+  loginForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    document.getElementById("loginMessage").textContent =
+      "Login form submitted for " + email + ". Connect a backend for real authentication.";
+  });
+}
